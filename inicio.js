@@ -78,7 +78,7 @@ toggleDetalhamentoBtn.addEventListener("click", () => {
 });
 ofensoresBtn.addEventListener("click", () => redirectToPage("OFENSORES.html"));
 rotasBtn.addEventListener("click", () =>
-  redirectToPage("ROTAS POR SETOR.html")
+  redirectToPage("ROTAS POR SETOR.HTML")
 );
 
 // Função para carregar JSON sem cache
