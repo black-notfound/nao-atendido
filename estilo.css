@@ -330,20 +330,105 @@
   width: 200px;
 }
 
-/* Estilos adicionais para o calendário */
-input[type="date"] {
-  background-color: #010e25; /* Cor de fundo */
-  color: rgb(0, 255, 255); /* Cor do texto (ano, mês, dia) */
-  border: 2px solid rgb(0, 255, 255); /* Cor da borda */
-  font-size: 15px; /* Tamanho da fonte */
-  padding: 10px;
-  border-radius: 5px;
+/* Container do calendário */
+.flatpickr-calendar {
+  background-color: rgb(28, 28, 28) !important;
+  border: 2px solid #00ffff !important;
+  border-radius: 12px;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+  font-family: 'Segoe UI', sans-serif;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  color: #ffffff; /* Todo o texto dentro do calendário ficará branco */
 }
 
-/* Estilo do botão de calendário */
-input[type="date"]::-webkit-calendar-picker-indicator {
-  background-color: rgb(0, 102, 255); /* Cor do ícone do calendário */
-  border-radius: 5px;
+/* Cabeçalho com mês e navegação */
+.flatpickr-months {
+  background-color: rgb(28, 28, 28);
+  border-bottom: 1px solid #00ffff;
+  padding: 10px;
+}
+.flatpickr-current-month {
+  color: #ffffff; /* branco */
+  font-size: 1.2rem;
+  font-weight: bold;
+
+}
+.flatpickr-prev-month,
+.flatpickr-next-month {
+  color: #ffffff;
+  transition: background 0.2s;
+}
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+/* Dias da semana (Dom, Seg, etc.) */
+span.flatpickr-weekday {
+  color: #ffffff; /* Agora os dias da semana são brancos */
+  font-weight: bold;
+  padding: 8px 0;
+  background-color: transparent;
+}
+
+/* Dias do mês */
+.flatpickr-day {
+  color: #ffffff; /* Todos os números dos dias serão brancos */
+  background-color: transparent;
+  border-radius: 8px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.flatpickr-day:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
+}
+
+/* Dia atual */
+.flatpickr-day.today {
+  border: 1px dashed #00ffff;
+  font-weight: bold;
+}
+
+/* Dia selecionado */
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background-color: #00ffff;
+  color: #111827; /* Fundo escuro quando selecionado */
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+/* Dia desativado */
+.flatpickr-day.disabled,
+.flatpickr-day.notAllowed {
+  color: #555 !important; /* Manter os desabilitados mais visíveis */
+  background-color: transparent !important;
+  cursor: not-allowed;
+}
+.flatpickr-monthDropdown-month{
+  color: white;
+  background-color: #111827 !important;
+
+}
+
+
+/* Input de data */
+input.flatpickr-input {
+  background-color: #111827;
+  color: #ffffff; /* Texto do input também é branco */
+  border: 1px solid #00ffff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s;
+}
+input.flatpickr-input:focus {
+  border: 2px solid #00ffff;
+  box-shadow: 0 0 5px #00ffff;
 }
 
 /* Estilo para o gráfico */
@@ -651,6 +736,14 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* Esconde o spinner apenas para o gráfico que carregou */
 .grafico.loaded .loading {
+  display: none;
+}
+
+.anychart-credits-text {
+  display: none;
+}
+
+.anychart-credits-logo {
   display: none;
 }
 

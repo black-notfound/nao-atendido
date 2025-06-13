@@ -1,186 +1,177 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Função para obter o horário atual em minutos
+  // Pega o horário atual em minutos
   const getCurrentTimeInMinutes = () => {
-    const currentDate = new Date();
-    return currentDate.getHours() * 60 + currentDate.getMinutes();
+    const now = new Date();
+    return now.getHours() * 60 + now.getMinutes();
   };
 
-  // Função para carregar os dados JSON e aplicar as atualizações
-  function loadAndUpdateTable() {
-    const currentTime = getCurrentTimeInMinutes(); // Obter o horário atual
+  const lista = document.getElementById('selecionar');
+  lista.addEventListener('change', function(){
+    loadAndUpdateTable(lista.value);
+    localStorage.setItem("local_rota", lista.value);
+  });
+  
+  // Referências ao modal e overlay
+  const modal = document.getElementById("modal");
+  const overlay = document.getElementById("modal-overlay");
 
-    // Carregar o arquivo configuracoes.json (horários limites)
-    fetch("vscode/configuracoes.json")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Erro ao carregar configuracoes.json");
-        }
-        return response.json();
+  // Função para carregar JSONs e atualizar as tabelas
+  function loadAndUpdateTable(local) {
+    const currentTime = getCurrentTimeInMinutes();
+
+    fetch("Jsons/configuracoes.json")
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro ao carregar configuracoes.json");
+        return res.json();
       })
       .then((configuracoes) => {
-        // Carregar o arquivo (status das rotas)
-        fetch("vscode/Acompamento_de_rotas.json")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Erro ao carregar Acompanhamento_de_rotas.json");
-            }
-            return response.json();
+        return fetch("Jsons/Acompamento_de_rotas.json")
+          .then((res) => {
+            if (!res.ok) throw new Error("Erro ao carregar Acompamento_de_rotas.json");
+            return res.json();
           })
           .then((rotas) => {
-            // Função para converter o horário "HH:MM" para minutos
+            // Converte "HH:MM" → minutos
             function timeToMinutes(time) {
-              const [hours, minutes] = time.split(":");
-              return parseInt(hours) * 60 + parseInt(minutes);
+              const [h, m] = time.split(":").map(Number);
+              return h * 60 + m;
             }
-
-            // Função para calcular a cor baseada na diferença de tempo
-            function calculateColor(difference, timeLimitInMinutes, status) {
-              const maxDifference = 100; // Diferença máxima em minutos para calcular a cor
-              const ratio = Math.min(difference / maxDifference, 1);
-
-              // Se o status for "Rota 100% produzida", a célula será verde
-              if (status.toLowerCase() === "rota 100% produzida") {
-                return "green";
-              }
-
-              // Se o horário limite já passou e o status não for "Rota 100% produzida", a célula ficará vermelha
-              if (timeLimitInMinutes < currentTime) {
-                return "red";
-              }
-
-              // Caso o horário ainda não tenha passado, a cor será calculada com base na diferença de tempo
+            // Calcula cor conforme status e prazo
+            function calculateColor(diff, limit, status) {
+              if (status.toLowerCase() === "rota 100% produzida") return "green";
+              if (limit < currentTime) return "red";
+              const ratio = Math.min(diff / 100, 1);
               const r = Math.floor(255 * (1 - ratio));
               const g = Math.floor(255 * ratio);
-              const b = 0;
-              return `rgb(${r}, ${g}, ${b})`;
+              return `rgb(${r},${g},0)`;
+            }
+            // Retorna lista [numero, qtd] de caixas pendentes dentro do intervalo
+            function calculatePendingBoxes(rangeStr, sectorBoxes) {
+              const m = rangeStr.match(/(\d+)\s*a\s*(\d+)/);
+              if (!m) return [];
+              const start = +m[1], end = +m[2], pend = [];
+              for (let i = start; i <= end; i++) {
+                const q = sectorBoxes[i] || 0;
+                if (q > 0) pend.push([i.toString(), q]);
+              }
+              return pend;
             }
 
-            // Função para aplicar as cores e os textos nas tabelas
+            // Aplica status, cor e caixas em cada setor
             function applyColors() {
-              const sectors = ["M", "Y", "V", "H"];
+              ["M", "Y", "V", "H"].forEach((sector) => {
+                const cfg        = configuracoes[sector] || {};
+                const statusData = rotas[sector]            || {};
+                const boxesData  = (rotas.ROTAS[local] && rotas.ROTAS[local][sector]) || {};
+                const rows       = document.querySelectorAll(`#tabela-${sector} tbody tr`);
 
-              sectors.forEach((sector) => {
-                const sectorData = configuracoes[sector];
-                const routesData = rotas[sector];
-                const rows = document.querySelectorAll(
-                  `table.${sector} tbody tr`
-                );
+                rows.forEach((row) => {
+                  const rotaCell   = row.querySelector("td.rota");
+                  const statusCell = row.querySelector("td.status");
+                  const caixasCell = row.querySelector("td.caixas");
+                  if (!rotaCell || !statusCell || !caixasCell) return;
 
-                rows.forEach((row, index) => {
-                  const routeName = row.cells[0].textContent.trim();
+                  const rota     = rotaCell.textContent.trim();
+                  const horario  = (cfg[rota] && cfg[rota].horario) || "00:00";
+                  const status   = statusData[rota] || "";
+                  const limitMin = timeToMinutes(horario);
+                  const diff     = Math.abs(limitMin - currentTime);
+                  const color    = calculateColor(diff, limitMin, status);
 
-                  // Obter horário limite e status da rota
-                  const { horario } = sectorData[routeName];
-                  const status = routesData[routeName] || ""; // Verifica se o status existe, caso contrário, usa um valor vazio
-
-                  const timeLimitInMinutes = timeToMinutes(horario);
-                  const timeDifference = Math.abs(
-                    timeLimitInMinutes - currentTime
-                  );
-                  const color = calculateColor(
-                    timeDifference,
-                    timeLimitInMinutes,
-                    status
-                  );
-
-                  // Aplica a cor de fundo na célula de status
-                  row.cells[1].style.backgroundColor = color;
-
-                  // Exibe o texto de status (indicando se está atrasado ou não)
-                  if (
-                    timeLimitInMinutes < currentTime &&
-                    status.toLowerCase() !== "rota 100% produzida"
-                  ) {
-                    row.cells[1].textContent = "Atrasado";
-                  } else if (status === "") {
-                    row.cells[1].textContent = "Sem status"; // Quando não houver status, mostra "Sem status"
+                  // Preenche status
+                  statusCell.style.backgroundColor = color;
+                  if (limitMin < currentTime && status.toLowerCase() !== "rota 100% produzida") {
+                    statusCell.textContent = "Atrasado";
                   } else {
-                    row.cells[1].textContent = status;
+                    statusCell.textContent = status || "Sem status";
                   }
+
+                  // Calcula e preenche total de caixas pendentes
+                  const pendList = calculatePendingBoxes(rota, boxesData);
+                  const totalPend = pendList.reduce((sum, [,q]) => sum + q, 0);
+                  caixasCell.textContent = totalPend;
+                  caixasCell.style.cursor = totalPend > 0 ? "pointer" : "default";
+
+                  // Abre o modal ao clicar, se houver pendência
+                  caixasCell.onclick = () => {
+                    if (totalPend === 0) return;
+                    const lista = document.getElementById("caixas-list");
+                    lista.innerHTML = pendList
+                      .map(([num, q]) => `Caixa ${num}: ${q} pendente${q > 1 ? "s" : ""}`)
+                      .join("<br>");
+                    modal.classList.add("show");
+                    overlay.classList.add("show");
+                  };
                 });
               });
             }
 
-            // Chama a função para aplicar as cores e textos assim que os dados estiverem carregados
             applyColors();
-          })
-          .catch((error) => console.error(error));
+          });
       })
-      .catch((error) => console.error(error));
+      .catch((err) => console.error(err));
   }
 
-  // Chama a função de atualização inicial
-  loadAndUpdateTable();
+  // Chamada inicial e intervalo de atualização
+  loadAndUpdateTable('Pendentes');
+  localStorage.setItem("local_rota", 'Pendentes');
+  setInterval(loadAndUpdateTable(localStorage.getItem("local_rota"), 10000));
 
-  // Atualiza a tabela a cada 30 segundos (10000 ms)
-  setInterval(loadAndUpdateTable, 10000); // 10 segundos
-});
+  // Fechar o modal usando apenas classes
+  document.getElementById("close-modal").addEventListener("click", () => {
+    modal.classList.remove("show");
+    overlay.classList.remove("show");
+  });
+  overlay.addEventListener("click", () => {
+    modal.classList.remove("show");
+    overlay.classList.remove("show");
+  });
 
-// Selecionando os elementos da sidebar e do conteúdo
-const sidebar = document.getElementById("sidebar");
-const openBtn = document.getElementById("open-btn");
-const closeBtn = document.getElementById("close-btn");
-const content = document.querySelector(".content");
-const toggleItemsBtn = document.getElementById("toggle-items");
-const toggleItemsBtn1 = document.getElementById("toggle-items1");
-const toggleItemsBtn2 = document.getElementById("toggle-items2");
-const itemList = document.getElementById("itemlist");
-const itemList1 = document.getElementById("itemlist1");
-const itemList2 = document.getElementById("itemlist2");
-const toggleDetalhamentoBtn = document.getElementById("toggle-detalhamento");
-const detalhamentoContainer = document.getElementById("detalhamento-container");
-const ofensoresBtn = document.getElementById("ofensores-btn");
-const rotasBtn = document.getElementById("rotas-btn");
+  // --------- Seu código de sidebar (sem alterações) ---------
+  const sidebar               = document.getElementById("sidebar");
+  const openBtn               = document.getElementById("open-btn");
+  const closeBtn              = document.getElementById("close-btn");
+  const content               = document.querySelector(".content");
+  const toggleItemsBtn        = document.getElementById("toggle-items");
+  const toggleItemsBtn1       = document.getElementById("toggle-items1");
+  const toggleItemsBtn2       = document.getElementById("toggle-items2");
+  const itemList              = document.getElementById("itemlist");
+  const itemList1             = document.getElementById("itemlist1");
+  const itemList2             = document.getElementById("itemlist2");
+  const toggleDetalhamentoBtn = document.getElementById("toggle-detalhamento");
+  const detalhamentoContainer = document.getElementById("detalhamento-container");
+  const ofensoresBtn          = document.getElementById("ofensores-btn");
+  const rotasBtn              = document.getElementById("rotas-btn");
 
-// Abrir a sidebar
-openBtn.addEventListener("click", () => {
-  sidebar.classList.add("open");
-  content.classList.add("open");
-});
-
-// Fechar a sidebar
-closeBtn.addEventListener("click", () => {
-  sidebar.classList.remove("open");
-  content.classList.remove("open");
-});
-
-// Fechar a sidebar ao clicar fora dela
-document.addEventListener("click", (event) => {
-  if (
-    !sidebar.contains(event.target) &&
-    !openBtn.contains(event.target) &&
-    sidebar.classList.contains("open")
-  ) {
+  openBtn.addEventListener("click", () => {
+    sidebar.classList.add("open");
+    content.classList.add("open");
+  });
+  closeBtn.addEventListener("click", () => {
     sidebar.classList.remove("open");
     content.classList.remove("open");
-  }
+  });
+  document.addEventListener("click", (evt) => {
+    if (
+      !sidebar.contains(evt.target) &&
+      !openBtn.contains(evt.target) &&
+      sidebar.classList.contains("open")
+    ) {
+      sidebar.classList.remove("open");
+      content.classList.remove("open");
+    }
+  });
+  toggleItemsBtn.addEventListener("click", () => itemList.classList.toggle("show"));
+  toggleItemsBtn1.addEventListener("click", () => itemList1.classList.toggle("show"));
+  toggleItemsBtn2.addEventListener("click", () => itemList2.classList.toggle("show"));
+  toggleDetalhamentoBtn.addEventListener("click", () => {
+    detalhamentoContainer.style.display =
+      detalhamentoContainer.style.display === "none" ? "block" : "none";
+  });
+  ofensoresBtn.addEventListener("click", () => (window.location.href = "OFENSORES.html"));
+  rotasBtn.addEventListener("click", () => (window.location.href = "ROTAS POR SETOR.html"));
 });
 
-// Mostrar ou esconder os itens na sidebar
-toggleItemsBtn.addEventListener("click", () => {
-  itemList.classList.toggle("show");
-});
 
-toggleItemsBtn1.addEventListener("click", () => {
-  itemList1.classList.toggle("show");
-});
 
-toggleItemsBtn2.addEventListener("click", () => {
-  itemList2.classList.toggle("show");
-});
 
-// Mostrar ou esconder os botões MÁQUINA, MEZANINO e EXTERNO ao clicar em "DETALHAMENTO DE ERROS"
-toggleDetalhamentoBtn.addEventListener("click", () => {
-  detalhamentoContainer.style.display =
-    detalhamentoContainer.style.display === "none" ? "block" : "none";
-});
-
-// Redirecionar para a página OFENSORES.html ao clicar no botão "OFENSORES"
-ofensoresBtn.addEventListener("click", () => {
-  window.location.href = "OFENSORES.html";
-});
-
-// Redirecionar para a página ROTAS POR SETOR.html ao clicar no botão "ROTAS POR SETOR"
-rotasBtn.addEventListener("click", () => {
-  window.location.href = "ROTAS POR SETOR.html";
-});

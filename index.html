@@ -13,6 +13,9 @@
     />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="estilo.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <!-- Inclusão do Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -85,9 +88,9 @@
       <section class="coluna1">
         <div class="grafico">
           <canvas id="graficoLinha"></canvas>
-          <!-- Botão com ícone de calendário -->
+          <!-- Botão do calendário -->
           <div class="calendar-container">
-            <input type="date" id="calendar" class="calendar-input" />
+            <input type="text" id="calendar" class="calendar-input"  readonly/>
           </div>
 
           <div class="resumoNAT">
@@ -260,5 +263,6 @@
       <div class="footer">DEVELOPED BY "Zion_Keim" e "Aécio_Silva"</div>
     </footer>
     <script src="inicio.js"></script>
+
   </body>
 </html>

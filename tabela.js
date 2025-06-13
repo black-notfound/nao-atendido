@@ -1,3 +1,4 @@
+
 // VARIÁVEIS GLOBAUS
 let dataSelecionadaGlobal = localStorage.getItem('data');
 let df = dataSelecionadaGlobal.split('-');
@@ -38,7 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// Função para preencher a tabela com os dados do JSON
+// tabelas.js
+
+// Função para preencher as tabelas com os dados do JSON
 function preencherTabela(dados, tabelaId, chave) {
   const tabelaBody = document
     .getElementById(tabelaId)
@@ -81,18 +84,23 @@ function carregarDados(arquivoJson, tabelaId, chave) {
     });
 }
 
-// Certificando-se de que o DOM foi carregado antes de preencher as tabelas
-document.addEventListener("DOMContentLoaded", () => {
-  
-  console.log(df);
-  carregarDados(`Jsons/Nat_${df}.json`, "tabela-dados", "MAIORES"); // Carrega os dados do arquivo ofensores.json
-  carregarDados(`Jsons/Nat_${df}.json`, "tabela-separacao", "SEPARAÇÃO"); // Carrega os dados do arquivo separação.json
-  carregarDados(
-    `Jsons/Nat_${df}.json`,
-    "tabela-ressuprimento",
-    "RESSUPRIMENTO"
-  ); // Carrega os dados do arquivo ressuprimento.json
-});
+// Função que será executada ao carregar a página
+const dataSelecionada = localStorage.getItem('data');
+
+if (dataSelecionada) {
+  // Use a data para carregar os dados corretamente
+  const [year, month, day] = dataSelecionada.split('-');
+  const fileName = `Nat_${day}_${month}_${year}.json`;
+
+  carregarDados(`Jsons/${fileName}`, "tabela-dados", "MAIORES");
+  carregarDados(`Jsons/${fileName}`, "tabela-separacao", "SEPARAÇÃO");
+  carregarDados(`Jsons/${fileName}`, "tabela-ressuprimento", "RESSUPRIMENTO");
+} else {
+  // Se não houver data salva, carregar os dados do dia de hoje
+  console.log("Nenhuma data selecionada, carregando dados do dia atual.");
+  carregarDados("Jsons/Nat_hoje.json", "tabela-dados", "MAIORES");  // Substitua por como você carregar dados do dia atual
+}
+
 
 // Selecionando os elementos da sidebar e do conteúdo
 const sidebar = document.getElementById("sidebar");
@@ -177,7 +185,12 @@ const f = document.getElementById('calendar');
 f.value =dataSelecionadaGlobal;
 
 
-
+document.addEventListener("DOMContentLoaded", function () {
+  flatpickr("#calendar", {
+   dateFormat: "d/m/Y",
+     allowInput: true // permite foco/click mesmo com readonly
+  });
+});
 
 function restaurarCor(event) {
   const elemento = event.target;
@@ -198,6 +211,7 @@ document.querySelectorAll("table").forEach((td) => {
 f.addEventListener('change', () => {
   let nova_data = f.value.split('-');
   nova_data = `${nova_data[2]}_${nova_data[1]}_${nova_data[0]}`;
+  df = nova_data;
   carregarDados(`Jsons/Nat_${nova_data}.json`, "tabela-dados", "MAIORES"); // Carrega os dados do arquivo ofensores.json
   carregarDados(`Jsons/Nat_${nova_data}.json`, "tabela-separacao", "SEPARAÇÃO"); // Carrega os dados do arquivo separação.json
   carregarDados(
@@ -210,3 +224,73 @@ f.addEventListener('change', () => {
 })
 
 
+async function initCalendar() {
+  try {
+    const response = await fetch('Jsons/config.json');
+    const data = await response.json();
+    const availableDates = data.DIAS;
+
+    console.log("Datas disponíveis:", availableDates);
+
+    flatpickr("#calendar", {
+      locale: 'pt',
+      altInput: true,
+      altFormat: "d-m-Y",       // Exibição amigável
+      dateFormat: "Y-m-d",      // Formato usado internamente
+      enable: availableDates,   // Apenas datas permitidas
+      defaultDate: localStorage.getItem('data') || availableDates[0],
+      locale: {
+        firstDayOfWeek: 1
+      },
+      onChange: function (selectedDates, dateStr, instance) {
+        // dateStr vem no formato Y-m-d, já no formato correto
+        localStorage.setItem('data', dateStr);
+        df = dateStr; 
+        console.log("Data selecionada:", dateStr);
+      }
+    });
+
+  } catch (error) {
+    console.error("Erro ao carregar datas:", error);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  carregarDados();
+
+  // Inicializa o calendário
+  initCalendar();
+
+  // Define o valor inicial no campo, se ainda não estiver definido
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = (hoje.getMonth() + 1).toString().padStart(2, "0");
+  const dia = hoje.getDate().toString().padStart(2, "0");
+
+  const dataHoje = `${ano}-${mes}-${dia}`;
+  const calendarioInput = document.querySelector("#calendar");
+
+  // Se a data atual estiver nas datas permitidas, usa ela como valor inicial
+  if (!localStorage.getItem('data')) {
+    localStorage.setItem('data', dataHoje);
+    calendarioInput.value = dataHoje;
+  }
+
+  // Atualiza gráficos e tabelas com base na data armazenada
+  const dataSelecionada = localStorage.getItem('data');
+
+  if (dataSelecionada) {
+    atualizarGrafico_1("NAT");
+    carregarTabela("NAT");
+    atualizarRosquinhas(selectedTime);
+
+    calendarioInput.value = dataSelecionada;
+  }
+
+  // Detecta troca manual da data (backup se necessário)
+  calendarioInput.addEventListener("change", () => {
+    const novaData = calendarioInput.value;
+    localStorage.setItem('data', novaData);
+    console.log("Data manualmente alterada:", novaData);
+  });
+});

@@ -261,6 +261,75 @@ th, td {
   padding: 8px;
 }
 
+
+
+/* --------------- MODAL --------------- */
+#modal {
+  display: none;               /* escondido por padrão */
+  position: fixed;
+  top: 50%;  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  /* ===== AQUI É O QUE MUDOU ===== */
+  width: auto;                 /* ajusta ao conteúdo */
+  min-width: 300px;            /* largura mínima (opcional) */
+  max-width: 500px;            /* sua largura máxima original */
+  max-height: 80vh;            /* até 80% da altura da viewport */
+  overflow-y: auto;            /* rolamento interno se precisar */
+  box-sizing: border-box;      /* inclui padding na largura total */
+  /* ================================ */
+  background: rgb(76, 161, 93);
+  border-radius: 8px;
+  padding: 20px 30px;
+  box-shadow: 0 5px 15px rgb(10, 47, 42);
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+#modal.show {
+  display: block;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* ------------ CABEÇALHO ------------- */
+#modal h3 {
+  margin: 0 0 15px;
+  font-size: 1.3rem;
+  text-align: center;
+  color: #fff;
+  background-color: rgb(10, 47, 42);
+  border-radius: 5px;
+}
+
+/* ------------ LISTA DE CAIXAS -------- */
+#caixas-list {
+  max-height: 300px;
+  overflow-y: auto;
+  line-height: 1.5;
+  color: rgb(255, 255, 255);
+  background-color: rgb(10, 47, 42);
+  padding: 5pt;
+  border-radius: 5px;
+}
+#caixas-list p {
+  margin: 8px 0;
+}
+
+/* ------------ BOTÃO FECHAR ----------- */
+.modal-close {
+  position: absolute;
+  top: 5px; right: 5px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #000;
+  transition: color 0.2s ease;
+}
+.modal-close:hover {
+  color: #666;
+}
+
 .footer {
   display: flex;
   position: fixed;
@@ -268,10 +337,25 @@ th, td {
   left: 50%;
   transform: translateX(-50%);
   background-color: rgb(28,28,28);
-  color: rgb(76, 161, 93);
+  color: #1e88e5;
+  font-weight: bold;
   padding: 5px;
-  font-size: 40px;
+  font-size: 30px;
   width: 100%;
   justify-content: center;
+}
+
+/* Seleção do que eu quero ver */
+
+.Sel{
+  background-color: rgb(19, 23, 34);
+  color: #fff;
+  border-color: aqua;
+  width: 15%;
+  text-align: center;
+  border-radius: 5px;
+  height: 30px;
+  font-size: 100%;
+  font-weight: bolder;
 }
 

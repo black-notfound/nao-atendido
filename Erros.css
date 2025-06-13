@@ -213,6 +213,7 @@ a {
 .calendar-container {
   display: flex;
   justify-content: center;
+  margin-top: 5px;
   background-color: rgb(28, 28, 28);
 }
 
@@ -220,28 +221,105 @@ a {
 .calendar-input {
   padding: 10px;
   font-size: 15px;
-  margin-top: 15pt;
-  color: rgb(76, 161, 93); /* Cor do texto (ano, mês, dia) */
+  color: rgb(214, 110, 15); /* Cor do texto (ano, mês, dia) */
   border: 2px solid rgb(76, 161, 93);
-  background-color: #010e25;
+  background-color: rgb(20, 19, 19);
   border-radius: 5px;
   width: 200px;
 }
 
-/* Estilos adicionais para o calendário */
-input[type="date"] {
-  background-color: #010e25; /* Cor de fundo */
-  color: rgb(214, 110, 15); /* Cor do texto (ano, mês, dia) */
-  border: 2px solid rgb(76, 161, 93); /* Cor da borda */
-  font-size: 15px; /* Tamanho da fonte */
-  padding: 10px;
-  border-radius: 5px;
+/* Container do calendário */
+.flatpickr-calendar {
+  background-color: rgb(28, 28, 28) !important;
+  border: 2px solid rgb(76, 161, 93) !important;
+  border-radius: 12px;
+  box-shadow: 0 0 25px rgb(76, 161, 93);
+  font-family: 'Segoe UI', sans-serif;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  color: #ffffff; /* Todo o texto dentro do calendário ficará branco */
 }
 
-/* Estilo do botão de calendário */
-input[type="date"]::-webkit-calendar-picker-indicator {
-  background-color: rgb(76, 161, 93); /* Cor do ícone do calendário */
-  border-radius: 5px;
+/* Cabeçalho com mês e navegação */
+.flatpickr-months {
+  background-color: rgb(28, 28, 28);
+  border-bottom: 1px solid rgb(76, 161, 93);
+  padding: 10px;
+}
+.flatpickr-current-month {
+  color: #ffffff; /* branco */
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+.flatpickr-prev-month,
+.flatpickr-next-month {
+  color: #ffffff;
+  transition: background 0.2s;
+}
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+/* Dias da semana (Dom, Seg, etc.) */
+span.flatpickr-weekday {
+  color: rgb(214, 110, 15); /* Agora os dias da semana são brancos */
+  font-weight: bold;
+  padding: 8px 0;
+  background-color: transparent;
+}
+
+/* Dias do mês */
+.flatpickr-day {
+  color: #ffffff; /* Todos os números dos dias serão brancos */
+  background-color: transparent;
+  border-radius: 8px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.flatpickr-day:hover {
+  background-color: rgb(76, 161, 93);
+  transform: scale(1.05);
+}
+
+/* Dia atual */
+.flatpickr-day.today {
+  border: 1px dashed rgb(214, 110, 15);
+  font-weight: bold;
+}
+
+/* Dia selecionado */
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background-color: rgb(214, 110, 15);
+  color: #111827; /* Fundo escuro quando selecionado */
+  font-weight: bold;
+  box-shadow: 0 0 10px rgb(76, 161, 93);
+}
+
+/* Dia desativado */
+.flatpickr-day.disabled,
+.flatpickr-day.notAllowed {
+  color: #555 !important; /* Manter os desabilitados mais visíveis */
+  background-color: transparent !important;
+  cursor: not-allowed;
+}
+
+/* Input de data */
+input.flatpickr-input {
+  background-color: #111827;
+  color: rgb(214, 110, 15); /* Texto do input também é branco */
+  border: 1px solid rgb(76, 161, 93);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s;
+}
+input.flatpickr-input:focus {
+  border: 2px solid rgb(76, 161, 93);
+  box-shadow: 0 0 5px rgb(76, 161, 93);
 }
 
 /* Tabelas NAT */
@@ -419,10 +497,9 @@ tfoot {
 }
 
 .footer {
-  background-color: rgb(10, 47, 42);
   text-align: center;
-  color: rgb(76, 161, 93);
-  height: 50px;
-  padding: 5px;
-  font-size: 40px;
+  color: #1e88e5;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 20px;
 }

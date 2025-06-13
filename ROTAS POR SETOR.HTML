@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="th" content="#FF5733">
+    <title>CD EMBU</title>
+    <link rel="stylesheet" href="Rotas.css">
+</head>
+<body>
+    <!-- LOGO -->
+    <nav class="navbar-header">
+        <header class="header">
+            <!-- LOGO -->
+            <div class="logo-container">
+                <a href="index.html"><img src="img/icone.png" class="logo"></a>
+                <p class="logo1">RDsaúde</p>
+            </div>
+            <!-- Sidebar -->
+                <div class="content">
+                    <button class="open-btn" id="open-btn">☰ Outros</button>
+                </div>
+                <div class="sidebar" id="sidebar">
+                    <div class="sidebar-header">
+                     SETORES
+                     <button class="close-btn" id="close-btn">×</button>
+                    </div>
+
+                     <!-- Botões de navegação -->
+            <button class="ofensores-btn" id="ofensores-btn">OFENSORES</button>
+            <button class="rotas-btn" id="rotas-btn">ROTAS POR SETOR</button>
+        
+            <!-- Botão principal para exibir os outros botões -->
+            <button class="toggle-items-btn" id="toggle-detalhamento">DETALHAMENTO DE ERROS</button>
+            <div class="detalhamento-container" id="detalhamento-container" style="display: none;">
+                
+
+                        <!-- Botões para alternar os itens -->
+                        <button class="toggle-items-btn" id="toggle-items">MÁQUINA</button>
+                    <div class="itemlist" id="itemlist">
+                        <a class="item" href="ERROS POR SETOR.html#M">Setor M</a>
+                        <a class="item" href="ERROS POR SETOR.html#Y">Setor Y</a>
+                        <a class="item" href="ERROS POR SETOR.html#V">Setor V</a>
+                        <a class="item" href="ERROS POR SETOR.html#H">Setor H</a>
+                    </div>
+                     <button class="toggle-items-btn" id="toggle-items2">MEZANINO</button>
+                    <div class="itemlist" id="itemlist2">
+                     <a class="item" href="ERROS POR SETOR.html#A-X">Setor A-X</a>
+                     <a class="item" href="ERROS POR SETOR.html#N-J">Setor N-J</a>
+                     <a class="item" href="ERROS POR SETOR.html#W">Setor W</a>
+                    </div>
+                     <button class="toggle-items-btn" id="toggle-items1">EXTERNO</button>
+                    <div class="itemlist" id="itemlist1">
+                        <a class="item" href="ERROS POR SETOR.html#D-K-Z">Setor D-K-Z</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+    
+
+    <div class="div-Filtro"> 
+      <select name="seleção" id="selecionar" class="Sel">
+        <option value="Pendentes" class="Selecionado">Pendentes</option>
+        <option value="Separando" class="Selecionado">Separando</option>
+        <option value="Confirindo" class="Selecionado">Confirindo</option>
+        <option value="Confiridas" class="Selecionado">Confiridas</option>
+        <option value="Expedição" class="Selecionado">Expedição</option>
+        <option value="Cancelados" class="Selecionado">Cancelados</option>
+        <option value="Sugerido" class="Selecionado">Sugerido</option>
+      </select>
+    </div>
+    <div class="containerTabelas">
+        <!-- Tabelas com classes correspondentes aos setores -->
+        <table id="tabela-M">
+            <thead>
+              <tr>
+                <th>Setor M</th>
+                <th>Status</th>
+                <th class="Caixas_totalm">Caixas pd</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="rota">11 a 16</td>
+                <td class="status"></td>
+                <td class="caixas"></td>
+              </tr>
+              <tr>
+                <td class="rota">17 a 22</td>
+                <td class="status"></td>
+                <td class="caixas"></td>
+              </tr>              <tr>
+                <td class="rota">23 a 28</td>
+                <td class="status"></td>
+                <td class="caixas"></td>
+              </tr>              <tr>
+                <td class="rota">29 a 34</td>
+                <td class="status"></td>
+                <td class="caixas"></td>
+              </tr>              <tr>
+                <td class="rota">35 a 40</td>
+                <td class="status"></td>
+                <td class="caixas"></td>
+              </tr>              <tr>
+                <td class="rota">42 a 46</td>
+                <td class="status"></td>
+                <td class="caixas"></td>
+              </tr>
+              <tr>
+                <td class="rota">53 a 58</td>
+                <td class="status"></td>
+                <td class="caixas"></td>
+              </tr>
+              <tr>
+                <td class="rota">59 a 64</td>
+                <td class="status"></td>
+                <td class="caixas"></td>
+              </tr>
+              <tr>
+                <td class="rota">65 a 70</td>
+                <td class="status"></td>
+                <td class="caixas"></td>
+              </tr>
+              <tr>
+                <td class="rota">72 a 81</td>
+                <td class="status"></td>
+                <td class="caixas"></td>
+              </tr>
+            </tbody>
+          </table>
+
+                <!-- Tabelas com classes correspondentes aos setores -->
+                <table id="tabela-Y">
+                    <thead>
+                      <tr>
+                        <th>Setor Y</th>
+                        <th>Status</th>
+                        <th class="Caixas_totaly">Caixas pd</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="rota">11 a 16</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>
+                      <tr>
+                        <td class="rota">17 a 22</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>              <tr>
+                        <td class="rota">23 a 28</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>              <tr>
+                        <td class="rota">29 a 34</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>              <tr>
+                        <td class="rota">35 a 40</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>              <tr>
+                        <td class="rota">42 a 46</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>
+                      <tr>
+                        <td class="rota">53 a 58</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>
+                      <tr>
+                        <td class="rota">59 a 64</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>
+                      <tr>
+                        <td class="rota">65 a 70</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>
+                      <tr>
+                        <td class="rota">72 a 81</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                <!-- Tabelas com classes correspondentes aos setores -->
+                <table id="tabela-V">
+                    <thead>
+                      <tr>
+                        <th>Setor V</th>
+                        <th>Status</th>
+                        <th class="Caixas_totalv">Caixas pd</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="rota">11 a 16</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>
+                      <tr>
+                        <td class="rota">17 a 22</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>              <tr>
+                        <td class="rota">23 a 28</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>              <tr>
+                        <td class="rota">29 a 34</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>              <tr>
+                        <td class="rota">35 a 40</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>              <tr>
+                        <td class="rota">42 a 46</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>
+                      <tr>
+                        <td class="rota">53 a 58</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>
+                      <tr>
+                        <td class="rota">59 a 64</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>
+                      <tr>
+                        <td class="rota">65 a 70</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>
+                      <tr>
+                        <td class="rota">72 a 81</td>
+                        <td class="status"></td>
+                        <td class="caixas"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+               <!-- Tabelas com classes correspondentes aos setores -->
+               <table id="tabela-H">
+                <thead>
+                  <tr>
+                    <th>Setor H</th>
+                    <th>Status</th>
+                    <th id="Caixas_totalh">Caixas pd</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="rota">11 a 16</td>
+                    <td class="status"></td>
+                    <td class="caixas"></td>
+                  </tr>
+                  <tr>
+                    <td class="rota">17 a 22</td>
+                    <td class="status"></td>
+                    <td class="caixas"></td>
+                  </tr>              <tr>
+                    <td class="rota">23 a 28</td>
+                    <td class="status"></td>
+                    <td class="caixas"></td>
+                  </tr>              <tr>
+                    <td class="rota">29 a 34</td>
+                    <td class="status"></td>
+                    <td class="caixas"></td>
+                  </tr>              <tr>
+                    <td class="rota">35 a 40</td>
+                    <td class="status"></td>
+                    <td class="caixas"></td>
+                  </tr>              <tr>
+                    <td class="rota">42 a 46</td>
+                    <td class="status"></td>
+                    <td class="caixas"></td>
+                  </tr>
+                  <tr>
+                    <td class="rota">53 a 58</td>
+                    <td class="status"></td>
+                    <td class="caixas"></td>
+                  </tr>
+                  <tr>
+                    <td class="rota">59 a 64</td>
+                    <td class="status"></td>
+                    <td class="caixas"></td>
+                  </tr>
+                  <tr>
+                    <td class="rota">65 a 70</td>
+                    <td class="status"></td>
+                    <td class="caixas"></td>
+                  </tr>
+                  <tr>
+                    <td class="rota">72 a 81</td>
+                    <td class="status"></td>
+                    <td class="caixas"></td>
+                  </tr>
+                </tbody>
+              </table>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal">
+        <button id="close-modal" class="modal-close">×</button>
+        <h3>Caixas Pendentes</h3>
+        <div id="caixas-list"></div>
+      </div>
+      <div id="modal-overlay"></div>
+    <div class="Rotas-por-sku" id="rotas-por-sku">
+      <input type="text" id="Sku">
+    </div>
+
+
+
+    <footer>
+        <div class="footer">
+            POWERED BY "Zion_Keim" e "Aécio_silva"
+        </div>
+    </footer>
+
+    <!-- Lógica de JS -->
+    <script src="Rotas.JS"></script>
+    <script src="Rotas2.JS"></script>
+</body>
+</html>

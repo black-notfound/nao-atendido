@@ -10,10 +10,37 @@ const alturaGrafico = 1000;
 const larguraGrafico = 600;
 let horarios = []; // Array global para armazenar os horários lidos do JSON
 let dataFormatada;
-
-
+let meusDias;
+let atual;
 // Objeto para armazenar as instâncias dos gráficos de rosca
 const pieCharts = {};
+document.addEventListener("DOMContentLoaded", () => {
+  const dataSalva = localStorage.getItem("data");
+  let dataParaUsar;
+
+  if (dataSalva) {
+    dataParaUsar = dataSalva;
+  } else {
+    const hoje = new Date();
+    const dia = String(hoje.getDate()).padStart(2, "0");
+    const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+    const ano = hoje.getFullYear();
+    dataParaUsar = `${dia}-${mes}-${ano}`;
+    
+    localStorage.setItem("data", dataParaUsar);
+  }
+  let [ano, mes, dia] = dataParaUsar.split('-');
+  dataParaUsar = `${dia}-${mes}-${ano}`;
+  // ✅ Atualiza o campo do calendário (caso ele exista)
+  const calendarInput = document.getElementById("calendar");
+  if (calendarInput) {
+    calendarInput.value = dataParaUsar;
+  }
+
+  // ✅ Carrega os dados da data correta
+  carregarDadosDoDia(dataParaUsar);
+});
+
 
 // Cache de elementos do DOM
 const sidebar = document.getElementById("sidebar");
@@ -98,7 +125,7 @@ const carregarJsonComCache = async (url) => {
 // Função para carregar dados do dia baseado na data selecionada no calendário
 // Agora, converte a data (YYYY-MM-DD) para o formato "Nat_DD_MM_YYYY.json"
 const carregarDadosDoDia = (dataStr) => {
-  const [year, month, day] = dataStr.split("-");
+  const [day, month, year] = dataStr.split("-");
   const novoArquivo = `Nat_${day}_${month}_${year}.json`;
   caminhoArquivo = `Jsons/${novoArquivo}`;
 
@@ -113,27 +140,23 @@ const carregarDadosDoDia = (dataStr) => {
 
 // FUNÇÕES RELACIONADAS AO GRÁFICO DE LINHAS (Radar NAT)
 // Cria ou atualiza o gráfico de linhas
-const atualizarGrafico = (labels, valores, nivelMeta, tipo) => {
+const atualizarGrafico = (labels, valores, nivelMeta, tipo, dadosVazios = false) => {
   const ctx = document.getElementById("graficoLinha").getContext("2d");
   const nome = `${tipo} %`;
   const gradient = criarDegradeRadar(ctx, alturaGrafico);
 
   if (grafico) {
-    atualizarGraficoExistente(
-      grafico,
-      labels,
-      valores,
-      gradient,
-      nome,
-      nivelMeta
-    );
-  } else {
-    grafico = new Chart(
-      ctx,
-      criarGraficoConfig(labels, valores, gradient, nome, nivelMeta)
-    );
+    grafico.destroy(); // destrói o gráfico anterior antes de recriar
   }
-  animarRadar(ctx, grafico.data.datasets[0], alturaGrafico);
+
+  grafico = new Chart(
+    ctx,
+    criarGraficoConfig(labels, valores, gradient, nome, nivelMeta, dadosVazios)
+  );
+
+  if (!dadosVazios) {
+    animarRadar(ctx, grafico.data.datasets[0], alturaGrafico);
+  }
 };
 
 const atualizarGraficoExistente = (
@@ -176,6 +199,7 @@ const animarRadar = (ctx, dataset, largura) => {
     offset += 3;
     if (offset >= largura) {
       offset = 0;
+
     }
     dataset.backgroundColor = criarDegradeRadar(ctx, largura);
     if (grafico) grafico.update();
@@ -185,92 +209,131 @@ const animarRadar = (ctx, dataset, largura) => {
   animacaoRadar = requestAnimationFrame(frame);
 };
 
-const criarGraficoConfig = (labels, valores, gradient, nome, nivelMeta) => ({
-  type: "line",
-  data: {
-    labels,
-    datasets: [
-      {
-        label: nome,
-        data: valores,
-        borderColor: "rgb(0, 255, 255)",
-        backgroundColor: gradient,
-        fill: true,
-        tension: 0,
-        borderWidth: 2,
-      },
-    ],
-  },
-  options: {
-    responsive: true,
-    interaction: { mode: "index", intersect: false },
-    plugins: {
-      tooltip: { enabled: true, position: "nearest" },
-      annotation: {
-        annotations: {
-          linhaMeta: {
-            type: "line",
-            yMin: nivelMeta,
-            yMax: nivelMeta,
-            borderColor: "rgb(214, 110, 15)",
-            borderWidth: 2,
-            label: {
-              content: `${nivelMeta}`,
-              enabled: true,
-              position: "start",
-              backgroundColor: "black",
-              color: "white",
-              font: { weight: "bold" },
+const criarGraficoConfig = (labels, valores, gradient, nome, nivelMeta, dadosVazios = false) => {
+  return {
+    type: "line",
+    data: {
+      labels: dadosVazios ? [] : labels,
+      datasets: dadosVazios ? [] : [
+        {
+          label: nome,
+          data: valores,
+          borderColor: "rgb(0, 255, 255)",
+          backgroundColor: gradient,
+          fill: true,
+          tension: 0,
+          borderWidth: 2,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        tooltip: { enabled: !dadosVazios, position: "nearest" },
+        annotation: dadosVazios
+          ? {}
+          : {
+              annotations: {
+                linhaMeta: {
+                  type: "line",
+                  yMin: nivelMeta,
+                  yMax: nivelMeta,
+                  borderColor: "rgb(214, 110, 15)",
+                  borderWidth: 2,
+                  label: {
+                    content: `${nivelMeta}`,
+                    enabled: true,
+                    position: "start",
+                    backgroundColor: "black",
+                    color: "white",
+                    font: { weight: "bold" },
+                  },
+                },
+              },
             },
-          },
+      },
+      scales: {
+        x: {
+          title: { display: true, text: "Hora" },
+          ticks: { autoSkip: true, maxRotation: 45, minRotation: 0 },
+          display: !dadosVazios,
+        },
+        y: {
+          title: { display: true, text: "Valor" },
+          min: 0,
+          ticks: { stepSize: 1 },
+          display: !dadosVazios,
         },
       },
     },
-    scales: {
-      x: {
-        title: { display: true, text: "Hora" },
-        ticks: { autoSkip: true, maxRotation: 45, minRotation: 0 },
+    plugins: [
+      {
+        id: "mensagemSemDados",
+        beforeDraw: (chart) => {
+          if (dadosVazios) {
+            const { width, height } = chart;
+            const ctx = chart.ctx;
+            ctx.save();
+            ctx.clearRect(0, 0, width, height);
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "18px Arial";
+            ctx.fillText("Sem dados disponíveis, volte mais tarde...", width / 2, height / 2);
+            ctx.restore();
+          }
+        },
       },
-      y: {
-        title: { display: true, text: "Valor" },
-        min: 0,
-        ticks: { stepSize: 1 },
-      },
-    },
-  },
-});
+    ],
+  };
+};
 
 // Atualiza o gráfico principal usando os dados da seção GRAFICO dentro do arquivo unificado
 let selectedTime = "07:30";
 const atualizarGrafico_1 = async (categoria) => {
-  const data = await carregarJsonComCache(caminhoArquivo);
-  if (!data) return;
-  categoria = categoria === "DROPS" ? "DROP'S" : categoria;
-  // Acessa os dados do gráfico na chave GRAFICO
-  const config = data.GRAFICO[categoria];
-  if (!config) {
-    console.error(`Categoria "${categoria}" não encontrada na seção GRAFICO.`);
-    return;
+  let labels = [], valores = [], nivelMeta = 6, dadosVazios = true;
+
+  try {
+    const data = await carregarJsonComCache(caminhoArquivo);
+    if (!data || !data.GRAFICO) {
+      // JSON não existe ou não tem dados da seção GRAFICO
+      atualizarGrafico(labels, valores, nivelMeta, categoria, dadosVazios);
+      return;
+    }
+
+    categoria = categoria === "DROPS" ? "DROP'S" : categoria;
+
+    const config = data.GRAFICO[categoria];
+    if (!config || Object.keys(config).length === 0) {
+      // Categoria não encontrada ou vazia
+      atualizarGrafico(labels, valores, nivelMeta, categoria, dadosVazios);
+      return;
+    }
+
+    labels = Object.keys(config);
+    valores = Object.values(config);
+    dadosVazios = valores.length === 0 || valores.every(v => v === 0 || v == null);
+    nivelMeta = data.GRAFICO.META?.[categoria] ?? 6;
+
+    atualizarGrafico(labels, valores, nivelMeta, categoria, dadosVazios);
+    carregarTabela(categoria);
+    atualizarRosquinhas(selectedTime);
+    valor_atual = categoria;
+
+  } catch (error) {
+    console.error("Erro ao carregar JSON:", error);
+    // Mesmo em caso de erro (ex: arquivo não existe), exibe o gráfico com mensagem
+    atualizarGrafico([], [], 6, categoria, true);
   }
-  const labels = Object.keys(config);
-  const valores = Object.values(config);
-  let nivelMeta = data.GRAFICO.META[categoria]; // Valor padrão, pois META pode não existir
-
-  if (nivelMeta == undefined){
-    nivelMeta = 6;
-  }
-
-
-  atualizarGrafico(labels, valores, nivelMeta, categoria);
-  carregarTabela(categoria);
-  atualizarRosquinhas(selectedTime);
-  valor_atual = categoria;
 };
+
 
 // Atualiza as informações de cada setor ao clicar nos botões respectivos
 function atualizarTudo(categoria) {
   atualizarGrafico_1(categoria);
   carregarTabela(categoria);
+  atual = categoria;
 }
 
 const carregarTabela = async (categoria) => {
@@ -364,8 +427,8 @@ const carregarDadosMaiores = async () => {
     console.error("Erro ao carregar os dados maiores:", error);
   }
 };
-setInterval(carregarDadosMaiores, 1000);
-window.onload = carregarDadosMaiores;
+
+
 
 // Função para buscar os dados do NAT_POR_SETOR e atualizar o slider dinamicamente
 const fetchNATSetor = async () => {
@@ -539,25 +602,72 @@ const destruirGraficoRosquinhas = () => {
   }
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (!calendar) {
-    console.error("Elemento #calendar não encontrado!");
-    return;
-  }
+function carregarDados() {
+  return fetch('config.json')
+    .then(resposta => resposta.json())
+    .then(data => {
+      localStorage.setItem('DIAS', data);
+    });
+}
 
-  const diasPermitidos = fetchDiasPermitidos();
-  console.log(diasPermitidos);
-  inicializarCalendario(calendar, diasPermitidos);
+
+async function initCalendar() {
+  try {
+      const response = await fetch('Jsons/config.json'); // arquivo JSON local
+      const data = await response.json();
+      const availableDates = data.DIAS;
+
+      console.log(availableDates);
+
+      flatpickr("#calendar", {
+          altInput: true,           // Cria um input 'bonito' 
+          altFormat: "d-m-Y",        // Formato que o usuário vê
+          dateFormat: "Y-m-d",       // Formato interno para o flatpickr trabalhar
+          enable: availableDates,   // Datas habilitadas
+          locale: 'pt',
+          allowInput: true,
+          defaultDate: localStorage.getItem('data') || availableDates[0], // Pega data salva ou primeira disponível
+          onChange: function(selectedDates, dateStr, instance) {
+
+              let [Ano, Mes, Dia] = dateStr.split('-');
+              let nova_data = `${Dia}-${Mes}-${Ano}`;
+              localStorage.setItem('data', nova_data);
+              console.log('Data que adjklsjdkad: ', nova_data);
+
+              carregarDadosDoDia(nova_data);
+              destruirGraficoRosquinhas();
+              
+          },
+      });
+
+  } catch (error) {
+      console.error("Erro ao carregar datas:", error);
+  }
+}
+
+
+let dataSelecionadaGlobal = localStorage.getItem('data'); // 2025-04-20
+let df = dataSelecionadaGlobal.split('-');
+df = `${df[2]}_${df[1]}_${df[0]}`; // 20_04_2025
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  
+
+  carregarDados();
+  if (!meusDias){
+    carregarDados();
+  }
+  initCalendar();
+
 
   // Define o valor inicial como a data atual (se for permitida)
-  const hoje = new Date();
+  const hoje = new Date() ;
   const ano = hoje.getFullYear();
   const mes = (hoje.getMonth() + 1).toString().padStart(2, "0");
   const dia = hoje.getDate().toString().padStart(2, "0");
-  dataFormatada = `${ano}-${mes}-${dia}`;
-  localStorage.setItem('data', dataFormatada);
-
-  carregarDadosDoDia(dataFormatada);
+  dataFormatada = `${dia}-${mes}-${ano}`;
+  
 
   atualizarGrafico_1("NAT");
   carregarTabela("NAT");
@@ -570,41 +680,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const dataSelecionada = calendar.value;
     localStorage.setItem('data', dataSelecionada);
     console.log("Data selecionada:", dataSelecionada);
-    destruirGraficoRosquinhas();
-    carregarDadosDoDia(dataSelecionada);
+    
+   
   });
 });
 
 // Função para buscar os dias permitidos do servidor
-function fetchDiasPermitidos() {
-  return fetch("vscode/settings.json")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Erro ao carregar o JSON");
-      }
-      return response.json();
-    })
-    .then((data) => data.DIAS)
-    .catch((error) => {
-      console.error("Erro:", error);
-      return null;
-    });
-}
+
 
 // Função para bloquear dias não permitidos
-function inicializarCalendario(calendar, diasPermitidos) {
-  calendar.addEventListener("input", () => {
-    const selecionado = calendar.value;
-    localStorage.setItem("data", selecionado);
-  });
-  if (calendar.type === "date") {
-    calendar.setAttribute("min", diasPermitidos[0] || "");
-    calendar.setAttribute(
-      "max",
-      diasPermitidos[diasPermitidos.length - 1] || ""
-    );
-  }
-}
 
 atualizarGrafico_1("NAT");
 
