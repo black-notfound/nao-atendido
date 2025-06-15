@@ -26,10 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const mes = String(hoje.getMonth() + 1).padStart(2, "0");
     const ano = hoje.getFullYear();
     dataParaUsar = `${dia}-${mes}-${ano}`;
-    
+
     localStorage.setItem("data", dataParaUsar);
   }
-  let [ano, mes, dia] = dataParaUsar.split('-');
+  let [ano, mes, dia] = dataParaUsar.split("-");
   dataParaUsar = `${dia}-${mes}-${ano}`;
   // ✅ Atualiza o campo do calendário (caso ele exista)
   const calendarInput = document.getElementById("calendar");
@@ -40,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✅ Carrega os dados da data correta
   carregarDadosDoDia(dataParaUsar);
 });
-
 
 // Cache de elementos do DOM
 const sidebar = document.getElementById("sidebar");
@@ -105,7 +104,7 @@ toggleDetalhamentoBtn.addEventListener("click", () => {
 });
 ofensoresBtn.addEventListener("click", () => redirectToPage("OFENSORES.html"));
 rotasBtn.addEventListener("click", () =>
-  redirectToPage("ROTAS POR SETOR.html")
+  redirectToPage("ROTAS POR SETOR.HTML")
 );
 
 // Função para carregar JSON sem cache
@@ -140,7 +139,13 @@ const carregarDadosDoDia = (dataStr) => {
 
 // FUNÇÕES RELACIONADAS AO GRÁFICO DE LINHAS (Radar NAT)
 // Cria ou atualiza o gráfico de linhas
-const atualizarGrafico = (labels, valores, nivelMeta, tipo, dadosVazios = false) => {
+const atualizarGrafico = (
+  labels,
+  valores,
+  nivelMeta,
+  tipo,
+  dadosVazios = false
+) => {
   const ctx = document.getElementById("graficoLinha").getContext("2d");
   const nome = `${tipo} %`;
   const gradient = criarDegradeRadar(ctx, alturaGrafico);
@@ -199,7 +204,6 @@ const animarRadar = (ctx, dataset, largura) => {
     offset += 3;
     if (offset >= largura) {
       offset = 0;
-
     }
     dataset.backgroundColor = criarDegradeRadar(ctx, largura);
     if (grafico) grafico.update();
@@ -209,22 +213,31 @@ const animarRadar = (ctx, dataset, largura) => {
   animacaoRadar = requestAnimationFrame(frame);
 };
 
-const criarGraficoConfig = (labels, valores, gradient, nome, nivelMeta, dadosVazios = false) => {
+const criarGraficoConfig = (
+  labels,
+  valores,
+  gradient,
+  nome,
+  nivelMeta,
+  dadosVazios = false
+) => {
   return {
     type: "line",
     data: {
       labels: dadosVazios ? [] : labels,
-      datasets: dadosVazios ? [] : [
-        {
-          label: nome,
-          data: valores,
-          borderColor: "rgb(0, 255, 255)",
-          backgroundColor: gradient,
-          fill: true,
-          tension: 0,
-          borderWidth: 2,
-        },
-      ],
+      datasets: dadosVazios
+        ? []
+        : [
+            {
+              label: nome,
+              data: valores,
+              borderColor: "rgb(0, 255, 255)",
+              backgroundColor: gradient,
+              fill: true,
+              tension: 0,
+              borderWidth: 2,
+            },
+          ],
     },
     options: {
       responsive: true,
@@ -280,7 +293,11 @@ const criarGraficoConfig = (labels, valores, gradient, nome, nivelMeta, dadosVaz
             ctx.textBaseline = "middle";
             ctx.fillStyle = "#ffffff";
             ctx.font = "18px Arial";
-            ctx.fillText("Sem dados disponíveis, volte mais tarde...", width / 2, height / 2);
+            ctx.fillText(
+              "Sem dados disponíveis, volte mais tarde...",
+              width / 2,
+              height / 2
+            );
             ctx.restore();
           }
         },
@@ -292,7 +309,10 @@ const criarGraficoConfig = (labels, valores, gradient, nome, nivelMeta, dadosVaz
 // Atualiza o gráfico principal usando os dados da seção GRAFICO dentro do arquivo unificado
 let selectedTime = "07:30";
 const atualizarGrafico_1 = async (categoria) => {
-  let labels = [], valores = [], nivelMeta = 6, dadosVazios = true;
+  let labels = [],
+    valores = [],
+    nivelMeta = 6,
+    dadosVazios = true;
 
   try {
     const data = await carregarJsonComCache(caminhoArquivo);
@@ -313,21 +333,20 @@ const atualizarGrafico_1 = async (categoria) => {
 
     labels = Object.keys(config);
     valores = Object.values(config);
-    dadosVazios = valores.length === 0 || valores.every(v => v === 0 || v == null);
+    dadosVazios =
+      valores.length === 0 || valores.every((v) => v === 0 || v == null);
     nivelMeta = data.GRAFICO.META?.[categoria] ?? 6;
 
     atualizarGrafico(labels, valores, nivelMeta, categoria, dadosVazios);
     carregarTabela(categoria);
     atualizarRosquinhas(selectedTime);
     valor_atual = categoria;
-
   } catch (error) {
     console.error("Erro ao carregar JSON:", error);
     // Mesmo em caso de erro (ex: arquivo não existe), exibe o gráfico com mensagem
     atualizarGrafico([], [], 6, categoria, true);
   }
 };
-
 
 // Atualiza as informações de cada setor ao clicar nos botões respectivos
 function atualizarTudo(categoria) {
@@ -427,8 +446,6 @@ const carregarDadosMaiores = async () => {
     console.error("Erro ao carregar os dados maiores:", error);
   }
 };
-
-
 
 // Função para buscar os dados do NAT_POR_SETOR e atualizar o slider dinamicamente
 const fetchNATSetor = async () => {
@@ -603,71 +620,61 @@ const destruirGraficoRosquinhas = () => {
 };
 
 function carregarDados() {
-  return fetch('config.json')
-    .then(resposta => resposta.json())
-    .then(data => {
-      localStorage.setItem('DIAS', data);
+  return fetch("config.json")
+    .then((resposta) => resposta.json())
+    .then((data) => {
+      localStorage.setItem("DIAS", data);
     });
 }
 
-
 async function initCalendar() {
   try {
-      const response = await fetch('Jsons/config.json'); // arquivo JSON local
-      const data = await response.json();
-      const availableDates = data.DIAS;
+    const response = await fetch("Jsons/config.json"); // arquivo JSON local
+    const data = await response.json();
+    const availableDates = data.DIAS;
 
-      console.log(availableDates);
+    console.log(availableDates);
 
-      flatpickr("#calendar", {
-          altInput: true,           // Cria um input 'bonito' 
-          altFormat: "d-m-Y",        // Formato que o usuário vê
-          dateFormat: "Y-m-d",       // Formato interno para o flatpickr trabalhar
-          enable: availableDates,   // Datas habilitadas
-          locale: 'pt',
-          allowInput: true,
-          defaultDate: localStorage.getItem('data') || availableDates[0], // Pega data salva ou primeira disponível
-          onChange: function(selectedDates, dateStr, instance) {
+    flatpickr("#calendar", {
+      altInput: true, // Cria um input 'bonito'
+      altFormat: "d-m-Y", // Formato que o usuário vê
+      dateFormat: "Y-m-d", // Formato interno para o flatpickr trabalhar
+      enable: availableDates, // Datas habilitadas
+      locale: "pt",
+      allowInput: true,
+      defaultDate: localStorage.getItem("data") || availableDates[0], // Pega data salva ou primeira disponível
+      onChange: function (selectedDates, dateStr, instance) {
+        let [Ano, Mes, Dia] = dateStr.split("-");
+        let nova_data = `${Dia}-${Mes}-${Ano}`;
+        localStorage.setItem("data", nova_data);
+        console.log("Data que adjklsjdkad: ", nova_data);
 
-              let [Ano, Mes, Dia] = dateStr.split('-');
-              let nova_data = `${Dia}-${Mes}-${Ano}`;
-              localStorage.setItem('data', nova_data);
-              console.log('Data que adjklsjdkad: ', nova_data);
-
-              carregarDadosDoDia(nova_data);
-              destruirGraficoRosquinhas();
-              
-          },
-      });
-
+        carregarDadosDoDia(nova_data);
+        destruirGraficoRosquinhas();
+      },
+    });
   } catch (error) {
-      console.error("Erro ao carregar datas:", error);
+    console.error("Erro ao carregar datas:", error);
   }
 }
 
-
-let dataSelecionadaGlobal = localStorage.getItem('data'); // 2025-04-20
-let df = dataSelecionadaGlobal.split('-');
+let dataSelecionadaGlobal = localStorage.getItem("data"); // 2025-04-20
+let df = dataSelecionadaGlobal.split("-");
 df = `${df[2]}_${df[1]}_${df[0]}`; // 20_04_2025
 
-
 document.addEventListener("DOMContentLoaded", () => {
-  
-
   carregarDados();
-  if (!meusDias){
+  if (!meusDias) {
     carregarDados();
   }
   initCalendar();
 
-
   // Define o valor inicial como a data atual (se for permitida)
-  const hoje = new Date() ;
+  const hoje = new Date();
   const ano = hoje.getFullYear();
   const mes = (hoje.getMonth() + 1).toString().padStart(2, "0");
   const dia = hoje.getDate().toString().padStart(2, "0");
   dataFormatada = `${dia}-${mes}-${ano}`;
-  
 
   atualizarGrafico_1("NAT");
   carregarTabela("NAT");
@@ -675,20 +682,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   calendar.value = dataFormatada;
 
-
   calendar.addEventListener("change", () => {
     const dataSelecionada = calendar.value;
-    localStorage.setItem('data', dataSelecionada);
+    localStorage.setItem("data", dataSelecionada);
     console.log("Data selecionada:", dataSelecionada);
-    
-   
   });
 });
 
 // Função para buscar os dias permitidos do servidor
 
-
 // Função para bloquear dias não permitidos
 
 atualizarGrafico_1("NAT");
-

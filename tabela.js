@@ -1,7 +1,6 @@
-
 // VARIÁVEIS GLOBAUS
-let dataSelecionadaGlobal = localStorage.getItem('data');
-let df = dataSelecionadaGlobal.split('-');
+let dataSelecionadaGlobal = localStorage.getItem("data");
+let df = dataSelecionadaGlobal.split("-");
 df = `${df[2]}_${df[1]}_${df[0]}`;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -14,7 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadingBox.style.visibility = "visible";
     console.log(df);
     try {
-      
       const url = `/gerar-relatorio${df}`;
 
       const response = await fetch(url);
@@ -85,11 +83,11 @@ function carregarDados(arquivoJson, tabelaId, chave) {
 }
 
 // Função que será executada ao carregar a página
-const dataSelecionada = localStorage.getItem('data');
+const dataSelecionada = localStorage.getItem("data");
 
 if (dataSelecionada) {
   // Use a data para carregar os dados corretamente
-  const [year, month, day] = dataSelecionada.split('-');
+  const [year, month, day] = dataSelecionada.split("-");
   const fileName = `Nat_${day}_${month}_${year}.json`;
 
   carregarDados(`Jsons/${fileName}`, "tabela-dados", "MAIORES");
@@ -98,9 +96,8 @@ if (dataSelecionada) {
 } else {
   // Se não houver data salva, carregar os dados do dia de hoje
   console.log("Nenhuma data selecionada, carregando dados do dia atual.");
-  carregarDados("Jsons/Nat_hoje.json", "tabela-dados", "MAIORES");  // Substitua por como você carregar dados do dia atual
+  carregarDados("Jsons/Nat_hoje.json", "tabela-dados", "MAIORES"); // Substitua por como você carregar dados do dia atual
 }
-
 
 // Selecionando os elementos da sidebar e do conteúdo
 const sidebar = document.getElementById("sidebar");
@@ -168,7 +165,7 @@ ofensoresBtn.addEventListener("click", () => {
 
 // Redirecionar para a página ROTAS POR SETOR.html ao clicar no botão "ROTAS POR SETOR"
 rotasBtn.addEventListener("click", () => {
-  window.location.href = "ROTAS POR SETOR.html";
+  window.location.href = "ROTAS POR SETOR.HTML";
 });
 
 function verificarMouse(evento) {
@@ -181,14 +178,13 @@ function verificarMouse(evento) {
   }
 }
 
-const f = document.getElementById('calendar');
-f.value =dataSelecionadaGlobal;
-
+const f = document.getElementById("calendar");
+f.value = dataSelecionadaGlobal;
 
 document.addEventListener("DOMContentLoaded", function () {
   flatpickr("#calendar", {
-   dateFormat: "d/m/Y",
-     allowInput: true // permite foco/click mesmo com readonly
+    dateFormat: "d/m/Y",
+    allowInput: true, // permite foco/click mesmo com readonly
   });
 });
 
@@ -207,9 +203,8 @@ document.querySelectorAll("table").forEach((td) => {
   td.addEventListener("mouseout", restaurarCor);
 });
 
-
-f.addEventListener('change', () => {
-  let nova_data = f.value.split('-');
+f.addEventListener("change", () => {
+  let nova_data = f.value.split("-");
   nova_data = `${nova_data[2]}_${nova_data[1]}_${nova_data[0]}`;
   df = nova_data;
   carregarDados(`Jsons/Nat_${nova_data}.json`, "tabela-dados", "MAIORES"); // Carrega os dados do arquivo ofensores.json
@@ -219,37 +214,33 @@ f.addEventListener('change', () => {
     "tabela-ressuprimento",
     "RESSUPRIMENTO"
   );
-
-
-})
-
+});
 
 async function initCalendar() {
   try {
-    const response = await fetch('Jsons/config.json');
+    const response = await fetch("Jsons/config.json");
     const data = await response.json();
     const availableDates = data.DIAS;
 
     console.log("Datas disponíveis:", availableDates);
 
     flatpickr("#calendar", {
-      locale: 'pt',
+      locale: "pt",
       altInput: true,
-      altFormat: "d-m-Y",       // Exibição amigável
-      dateFormat: "Y-m-d",      // Formato usado internamente
-      enable: availableDates,   // Apenas datas permitidas
-      defaultDate: localStorage.getItem('data') || availableDates[0],
+      altFormat: "d-m-Y", // Exibição amigável
+      dateFormat: "Y-m-d", // Formato usado internamente
+      enable: availableDates, // Apenas datas permitidas
+      defaultDate: localStorage.getItem("data") || availableDates[0],
       locale: {
-        firstDayOfWeek: 1
+        firstDayOfWeek: 1,
       },
       onChange: function (selectedDates, dateStr, instance) {
         // dateStr vem no formato Y-m-d, já no formato correto
-        localStorage.setItem('data', dateStr);
-        df = dateStr; 
+        localStorage.setItem("data", dateStr);
+        df = dateStr;
         console.log("Data selecionada:", dateStr);
-      }
+      },
     });
-
   } catch (error) {
     console.error("Erro ao carregar datas:", error);
   }
@@ -271,13 +262,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const calendarioInput = document.querySelector("#calendar");
 
   // Se a data atual estiver nas datas permitidas, usa ela como valor inicial
-  if (!localStorage.getItem('data')) {
-    localStorage.setItem('data', dataHoje);
+  if (!localStorage.getItem("data")) {
+    localStorage.setItem("data", dataHoje);
     calendarioInput.value = dataHoje;
   }
 
   // Atualiza gráficos e tabelas com base na data armazenada
-  const dataSelecionada = localStorage.getItem('data');
+  const dataSelecionada = localStorage.getItem("data");
 
   if (dataSelecionada) {
     atualizarGrafico_1("NAT");
@@ -290,7 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Detecta troca manual da data (backup se necessário)
   calendarioInput.addEventListener("change", () => {
     const novaData = calendarioInput.value;
-    localStorage.setItem('data', novaData);
+    localStorage.setItem("data", novaData);
     console.log("Data manualmente alterada:", novaData);
   });
 });
