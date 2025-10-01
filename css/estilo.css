@@ -221,15 +221,20 @@
   background-color: rgb(28, 28, 28);
 }
 
+.containerGeral {
+  display: flex;
+  justify-content: space-between;
+}
+
+
 .coluna1,
 .coluna2 {
   flex: 1;
   max-width: 50%;
   height: auto;
-  min-height: 600px; /* Garantir altura mínima suficiente */
+  min-height: 600px; 
   padding: 20px;
   text-align: center;
-  justify-content: space-between;
   margin-top: 4px;
   box-sizing: border-box;
 }
@@ -246,7 +251,6 @@
 }
 
 .coluna2 {
-  background-color: rgb(19, 23, 34);
   background-color: rgb(28, 28, 28);
   height: auto;
   margin: 10px;
@@ -305,9 +309,8 @@
 
   .coluna1,
   .coluna2 {
-    max-width: 99%;
-    width: 99%;
-    min-height: auto;
+    max-width: 100%;
+    min-height: 100%;
   }
 }
 
@@ -679,11 +682,11 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .graficos-container {
-  display: flex; /* Usando Flexbox para posicionar os gráficos lado a lado */
-  justify-content: space-between; /* Distribui os gráficos com espaços entre eles */
-  gap: 20px; /* Espaço entre os gráficos */
-  flex-wrap: wrap; /* Permite que os gráficos se empilhem em telas pequenas */
-  padding: 20px; /* Adiciona um padding ao redor do container */
+  display: flex; 
+  justify-content: space-between; 
+  gap: 20px;
+  flex-wrap: wrap; 
+  padding: 20px; 
 }
 
 #grafico1,
@@ -701,7 +704,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 @media (max-width: 768px) {
   .graficos-container {
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
   }
 }
